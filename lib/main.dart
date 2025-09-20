@@ -42,11 +42,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _GenerarCuadros();
+    _generarCuadros();
   }
 
   //colores para los cuadros
-  void _GenerarCuadros() {
+  void _generarCuadros() {
     final List<Color> palette = [
       Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple,
       Colors.yellow, Colors.teal, Colors.deepOrange, Colors.pink, Colors.indigo
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Navigator.of(context).pop();
                         
                         setState(() {
-                          _GenerarCuadros();
+                          _generarCuadros();
                         });
                       },
                       child: const Text('Reiniciar'),
@@ -162,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _GenerarCuadros();
+            _generarCuadros();
           });
         },
         hoverColor: Colors.purple,
