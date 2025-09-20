@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late List<Color> _colores;
   late List<Color> _pantalla;  // Almacena los colores de los cuadros
   late List<bool> _descubierto;  // Si la carta está descubierta o no
+  late List<int> _abiertas;    // Cartas actualmente abiertas
   bool _bloquear = false;         // Para bloquear la selección mientras se comparan cartas
 
   @override
@@ -50,8 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple,
       Colors.yellow, Colors.teal, Colors.deepOrange, Colors.pink, Colors.indigo
     ];
-
+    _descubierto = [];
+    _abiertas = [];
     _colores = [];
+   _pantalla = [];
+
     // Duplicar los colores para formar los pares
     for (var i = 0; i < palette.length; i++) {
       _colores.add(palette[i]);
@@ -69,8 +73,49 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_bloquear || _descubierto[index]) return;
 
     setState(() {
+      _abiertas.add(index);
       _descubierto[index] = true;  // Revelar la carta
     });
+
+    if (_abiertas.length == 2) {
+      _bloquear = true;
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          if (_pantalla[_abiertas[0]] == _pantalla[_abiertas[1]]) {
+            _abiertas.clear();
+            _bloquear = false;
+            if(_descubierto.every((carta) => carta)) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('¡Felicidades!'),
+                  content: const Text('Has ganado el juego.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        
+                        setState(() {
+                          _GenerarCuadros();
+                        });
+                      },
+                      child: const Text('Reiniciar'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+          }else if (_pantalla[_abiertas[0]] != _pantalla[_abiertas[1]]) {
+            // No son iguales, ocultar las cartas
+            _descubierto[_abiertas[0]] = false;
+            _descubierto[_abiertas[1]] = false;
+          }
+          _abiertas.clear();
+          _bloquear = false;
+        });
+      });
+    }
   }
 
   @override
@@ -114,10 +159,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _GenerarCuadros(); 
+          setState(() {
+            _GenerarCuadros();
+          });
         },
         hoverColor: Colors.purple,
         tooltip: 'Reiniciar',
